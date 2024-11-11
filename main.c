@@ -17,13 +17,26 @@
 
 # define SIGN(value) ((value < 0) ? -1 : (value > 0) ? 1 : 0)
 
-# define ASSERT(a) printf("%s\n", a ? OK : KO); usleep(SLEEPTIME)
-# define ASSERT_SIGN(a, b) printf("%s - Expected: %d Getting: %d\n", (SIGN(a) == SIGN(b)) ? OK : KO, SIGN(a), SIGN(b)); usleep(SLEEPTIME)
-# define ASSERT_SIZE_T(a, b) printf("%s - Expected: %ld Getting: %ld\n", (a == b) ? OK : KO, a, b); usleep(SLEEPTIME)
-# define ASSERT_INT(a, b) printf("%s - Expected: %d Getting: %d\n", (a == b) ? OK : KO, a, b); usleep(SLEEPTIME)
-# define ASSERT_STRING(a, b) printf("%s - Expected: %s Getting: %s\n", ((a == NULL && b == NULL) ? 1 : (a == NULL && b != NULL) ? 0 : (a != NULL && b == NULL) ? 0 : !strcmp(a, b)) ? OK : KO, a ? a : "(null)", b ? b : "(null)"); usleep(SLEEPTIME)
-# define ASSERT_CHAR(a, b) printf("%s - Expected: %c Getting: %c\n", (a == b) ? OK : KO, a, b); usleep(SLEEPTIME)
-# define ASSERT_VOID(a, b, n) printf("%s\n", ((a == NULL && b == NULL) ? 1 : (a == NULL && b != NULL) ? 0 : (a != NULL && b == NULL) ? 0 : !memcmp(a, b, n)) ? OK : KO); usleep(SLEEPTIME)
+# define ASSERT(a) printf("%s\n", a ? OK : KO); usleep(SLEEPTIME);
+# define ASSERT_SIGN(a, b) printf("%s - Expected: %d Getting: %d\n", (SIGN(a) == SIGN(b)) ? OK : KO, SIGN(a), SIGN(b)); usleep(SLEEPTIME);
+# define ASSERT_SIZE_T(a, b) printf("%s - Expected: %ld Getting: %ld\n", (a == b) ? OK : KO, a, b); usleep(SLEEPTIME);
+# define ASSERT_INT(a, b) printf("%s - Expected: %d Getting: %d\n", (a == b) ? OK : KO, a, b); usleep(SLEEPTIME);
+# define ASSERT_STRING(a, b) printf("%s - Expected: '%s' Getting: '%s'\n", ((a == NULL && b == NULL) ? 1 : (a == NULL && b != NULL) ? 0 : (a != NULL && b == NULL) ? 0 : !strcmp(a, b)) ? OK : KO, a ? a : "(null)", b ? b : "(null)"); usleep(SLEEPTIME);
+# define ASSERT_CHAR(a, b) printf("%s - Expected: %c Getting: %c\n", (a == b) ? OK : KO, a, b); usleep(SLEEPTIME);
+# define ASSERT_VOID(a, b, n) printf("%s\n", ((a == NULL && b == NULL) ? 1 : (a == NULL && b != NULL) ? 0 : (a != NULL && b == NULL) ? 0 : !memcmp(a, b, n)) ? OK : KO); usleep(SLEEPTIME);
+
+int splitTest(char **src, char **test, int size)
+{
+	int i = 0;
+
+	while (i < size)
+	{
+		if (strcmp(src[i], test[i]) != 0)
+			return (0);
+		i++;
+	}
+	return (1);
+}
 
 int main ()
 {
@@ -200,13 +213,41 @@ int main ()
 	ASSERT_INT(atoi("-2147483648"), ft_atoi("-2147483648"));
 
 	printf("\n--> FT_SUBSTR <--\n");
-
+	char *testSUBSTR = "Im a bigass test string and im gonna be tested";
+	ASSERT_STRING("bigass test string and", ft_substr(testSUBSTR, 5, 22));
+	ASSERT_STRING("Im a bigass test string and im gonna be tested", ft_substr(testSUBSTR, 0, strlen(testSUBSTR)));
+	ASSERT_STRING("", ft_substr(testSUBSTR, 0, 0));
+	ASSERT_STRING("", ft_substr(testSUBSTR, strlen(testSUBSTR), 1));
 
 	printf("\n--> FT_STRTRIM <--\n");
-
+	char *testSTRTRIM = "abcabcbabtestabcbabcbabcab";
+	char *test2STRTRIM = "     test    ";
+	char *test3STRTRIM = "_     TEST    _";
+	char *test4STRTRIM = "    A whole bunch of turbulence   HEHEHE    ";
+	ASSERT_STRING("test", ft_strtrim(testSTRTRIM, "abc"));
+	ASSERT_STRING("test", ft_strtrim(test2STRTRIM, " "));
+	ASSERT_STRING(test3STRTRIM, ft_strtrim(test3STRTRIM, " "));
+	ASSERT_STRING("A whole bunch of turbulence   HEHEHE", ft_strtrim(test4STRTRIM, " "));
+	ASSERT_STRING("A whole bunch of turbulence", ft_strtrim(test4STRTRIM, " HE"));
+	ASSERT_STRING(test4STRTRIM, ft_strtrim(test4STRTRIM, ""));
 
 	printf("\n--> FT_SPLIT <--\n");
-
+	char **testSPLIT = ft_split("Je suis la", ' ');
+	char **correctionSPLIT = calloc(3, sizeof(char *));
+	correctionSPLIT[0] = "Je";
+	correctionSPLIT[1] = "suis";
+	correctionSPLIT[2] = "la";
+	ASSERT(splitTest(testSPLIT, correctionSPLIT, 3));
+	char **test2SPLIT = ft_split("Je suis la", 0);
+	char **correction2SPLIT = calloc(1, sizeof(char *));
+	correction2SPLIT[0] = "Je suis la";
+	ASSERT(splitTest(test2SPLIT, correction2SPLIT, 1));
+	char **test3SPLIT = ft_split("Je suis la je suis la", 'u');
+	char **correction3SPLIT = calloc(3, sizeof(char *));
+	correction3SPLIT[0] = "Je s";
+	correction3SPLIT[1] = "is la je s";
+	correction3SPLIT[2] = "is la";
+	ASSERT(splitTest(test3SPLIT, correction3SPLIT, 3));
 
 	printf("\n--> FT_ITOA <--\n");
 	ASSERT_STRING("2147483647", ft_itoa(MAX_INT));
