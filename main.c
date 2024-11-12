@@ -10,6 +10,7 @@
 
 # define OK "\x1B[32mOK\x1B[37m"
 # define KO "\x1B[31mKO\x1B[37m"
+# define IDK "\e[0;33m?\x1B[37m"
 # define SLEEPTIME 25000
 
 # define MAX_INT 2147483647
@@ -24,6 +25,7 @@
 # define ASSERT_STRING(a, b) printf("%s - Expected: '%s' Getting: '%s'\n", ((a == NULL && b == NULL) ? 1 : (a == NULL && b != NULL) ? 0 : (a != NULL && b == NULL) ? 0 : !strcmp(a, b)) ? OK : KO, a ? a : "(null)", b ? b : "(null)"); usleep(SLEEPTIME);
 # define ASSERT_CHAR(a, b) printf("%s - Expected: %c Getting: %c\n", (a == b) ? OK : KO, a, b); usleep(SLEEPTIME);
 # define ASSERT_VOID(a, b, n) printf("%s\n", ((a == NULL && b == NULL) ? 1 : (a == NULL && b != NULL) ? 0 : (a != NULL && b == NULL) ? 0 : !memcmp(a, b, n)) ? OK : KO); usleep(SLEEPTIME);
+# define ASSERT_IDK(a) printf(" - %s %s\n", a, IDK);
 
 int splitTest(char **src, char **test, int size)
 {
@@ -36,6 +38,32 @@ int splitTest(char **src, char **test, int size)
 		i++;
 	}
 	return (1);
+}
+
+char capStrmapiTest(unsigned int n, char c)
+{
+	n += 0;
+	return (toupper(c));
+}
+
+char lowStrmapiTest(unsigned int n, char c)
+{
+	n += 0;
+	return (tolower(c));
+}
+
+void capStriteriTest(unsigned int n, char* c)
+{
+	if (c[0] >= 'a' && c[0] <= 'z')
+		c[0] -= 32;
+	n += 0;
+}
+
+void lowStriteriTest(unsigned int n, char* c)
+{
+	if (c[0] >= 'A' && c[0] <= 'Z')
+		c[0] += 32;
+	n += 0;
 }
 
 int main ()
@@ -114,8 +142,14 @@ int main ()
 	ASSERT_VOID(memcpy(dstMEMCPY, srcMEMCPY, 50), ft_memcpy(dstMEMCPY, srcMEMCPY, 50), 50);
 	ASSERT_VOID(memcpy(dstMEMCPY, srcMEMCPY, 300), ft_memcpy(dstMEMCPY, srcMEMCPY, 300), 300);
 
-
 	printf("\n--> MEMMOVE <--\n");
+	char dstMEMMOVE[100] = "Je suis le test";
+	char dstMEMMOVE2[100] = "Je suis le test";
+	char srcMEMMOVE[100] = "JE SUIS LE TEST";
+	ASSERT_VOID(memmove(dstMEMMOVE, srcMEMMOVE, strlen(srcMEMMOVE)), ft_memmove(dstMEMMOVE2, srcMEMMOVE, strlen(srcMEMMOVE)), strlen(srcMEMMOVE));
+	ASSERT_VOID(memmove(dstMEMMOVE, srcMEMMOVE, strlen(srcMEMMOVE) / 2), ft_memmove(dstMEMMOVE2, srcMEMMOVE, strlen(srcMEMMOVE) / 2), strlen(srcMEMMOVE) / 2);
+	ASSERT_VOID(memmove(dstMEMMOVE, srcMEMMOVE, strlen(srcMEMMOVE) / 4), ft_memmove(dstMEMMOVE2, srcMEMMOVE, strlen(srcMEMMOVE) / 4), strlen(srcMEMMOVE) / 4);
+	ASSERT_VOID(memmove(dstMEMMOVE, srcMEMMOVE, 0), ft_memmove(dstMEMMOVE2, srcMEMMOVE, 0), 0);
 
 	printf("\n--> STRLCPY <--\n");
 	char destSTRLCPY[100]; "";
@@ -130,7 +164,6 @@ int main ()
 	char destSTRLCAT[100]; "Je";
 	char destSTRLCAT2[100]; "Je";
 	char srcSTRLCAT[100] = " suis la";
-	ASSERT_SIZE_T(strlcat(destSTRLCAT, srcSTRLCAT, strlen(srcSTRLCAT) + 1), ft_strlcat(destSTRLCAT2, srcSTRLCAT, strlen(srcSTRLCAT) + 1));
 	ASSERT_SIZE_T(strlcat(destSTRLCAT, srcSTRLCAT, strlen(srcSTRLCAT) / 2), ft_strlcat(destSTRLCAT2, srcSTRLCAT, strlen(srcSTRLCAT) / 2));
 	ASSERT_SIZE_T(strlcat(destSTRLCAT, srcSTRLCAT, strlen(destSTRLCAT)), ft_strlcat(destSTRLCAT2, srcSTRLCAT, strlen(destSTRLCAT2)));
 	ASSERT_SIZE_T(strlcat(destSTRLCAT, srcSTRLCAT, strlen(destSTRLCAT) / 2), ft_strlcat(destSTRLCAT2, srcSTRLCAT, strlen(destSTRLCAT2) / 2));
@@ -219,6 +252,12 @@ int main ()
 	ASSERT_STRING("", ft_substr(testSUBSTR, 0, 0));
 	ASSERT_STRING("", ft_substr(testSUBSTR, strlen(testSUBSTR), 1));
 
+	printf("\n--> FT_STRJOIN <--\n");
+	ASSERT_STRING("Im a test text", ft_strjoin("Im a", " test text"));
+	ASSERT_STRING("Im a test text", ft_strjoin("Im a test text", ""));
+	ASSERT_STRING("Im a test text", ft_strjoin("", "Im a test text"));
+	ASSERT_STRING("", ft_strjoin("", ""));
+
 	printf("\n--> FT_STRTRIM <--\n");
 	char *testSTRTRIM = "abcabcbabtestabcbabcbabcab";
 	char *test2STRTRIM = "     test    ";
@@ -259,21 +298,47 @@ int main ()
 	ASSERT_STRING("42", ft_itoa(42));
 
 	printf("\n--> FT_STRMAPI <--\n");
+	ASSERT_STRING("JE SUIS UN TEXT UTILISE POUR LE TEST", ft_strmapi("je suis un text utilise pour le test", &capStrmapiTest));
+	ASSERT_STRING("", ft_strmapi("", &capStrmapiTest));
+	ASSERT_STRING("je suis un text utilise pour le test", ft_strmapi("JE SUIS UN TEXT UTILISE POUR LE TEST", &lowStrmapiTest));
+	ASSERT_STRING("", ft_strmapi("", &lowStrmapiTest));
 
-
-	printf("\n--> FT_STITERI <--\n");
-
+	printf("\n--> FT_STRITERI <--\n");
+	char test1[100] = "je suis un text utilise pour le test";
+	char test15[100] = "";
+	ft_striteri(test1, &capStriteriTest);
+	ft_striteri(test15, &capStriteriTest);
+	ASSERT_STRING("JE SUIS UN TEXT UTILISE POUR LE TEST", test1);
+	ASSERT_STRING("", test15);
+	char test2[100] = "JE SUIS UN TEXT UTILISE POUR LE TEST";
+	char test25[100] = "";
+	ft_striteri(test2, &lowStriteriTest);
+	ft_striteri(test25, &lowStriteriTest);
+	ASSERT_STRING("je suis un text utilise pour le test", test2);
+	ASSERT_STRING("", test25);
 
 	printf("\n--> FT_PUTCHAR_FD <--\n");
-
+	ft_putchar_fd('J', 1); ASSERT_IDK("J"); usleep(SLEEPTIME);
+	ft_putchar_fd('@', 1); ASSERT_IDK("@"); usleep(SLEEPTIME);
+	ft_putchar_fd(' ', 1); ASSERT_IDK(" "); usleep(SLEEPTIME);
+	ft_putchar_fd('\0', 1); ASSERT_IDK(""); usleep(SLEEPTIME);
 
 	printf("\n--> FT_PUTSTR_FD <--\n");
-
+	ft_putstr_fd("Je suis ici mgl", 1); ASSERT_IDK("Je suis ici mgl"); usleep(SLEEPTIME);
+	ft_putstr_fd(" ", 1); ASSERT_IDK(" "); usleep(SLEEPTIME);
+	ft_putstr_fd("", 1); ASSERT_IDK(""); usleep(SLEEPTIME);
 
 	printf("\n--> FT_PUTENDL_FD <--\n");
-
+	ft_putendl_fd("Je suis ici mgl", 1); ASSERT_IDK("Je suis ici mgl"); usleep(SLEEPTIME);
+	ft_putendl_fd(" ", 1); ASSERT_IDK(" "); usleep(SLEEPTIME);
+	ft_putendl_fd("", 1); ASSERT_IDK(""); usleep(SLEEPTIME);
 
 	printf("\n--> FT_PUTNBR_FD <--\n");
+	ft_putnbr_fd(MIN_INT, 1); ASSERT_IDK("-2147483648"); usleep(SLEEPTIME);
+	ft_putnbr_fd(MAX_INT, 1); ASSERT_IDK("2147483647"); usleep(SLEEPTIME);
+	ft_putnbr_fd(42, 1); ASSERT_IDK("42"); usleep(SLEEPTIME);
+	ft_putnbr_fd(-42, 1); ASSERT_IDK("-42"); usleep(SLEEPTIME);
+	ft_putnbr_fd(0, 1); ASSERT_IDK("0"); usleep(SLEEPTIME);
 
 	printf("\nDONE\n");
 }

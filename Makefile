@@ -1,4 +1,4 @@
-TESTED_FOLDER_NAME = libft-temp
+TESTED_FOLDER_NAME = libft
 
 NAME = test.out
 
@@ -8,8 +8,11 @@ LDFLAGS = -Llibs -lft -lbsd
 
 TESTED_FOLDER = ../${TESTED_FOLDER_NAME}
 
-all: execute fclean
+all: fclean createdir execute
 	
+createdir:
+	mkdir includes libs
+
 execute: getfiles ${NAME} 
 	./${NAME}
 
@@ -27,8 +30,7 @@ clean:
 
 fclean: clean
 	rm -f ${NAME}
-	rm -f includes/libft.h
-	rm -f libs/libft.a
+	rm -fr includes libs
 
 re: fclean all
 
