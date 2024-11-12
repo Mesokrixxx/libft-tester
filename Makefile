@@ -8,7 +8,7 @@ LDFLAGS = -Llibs -lft -lbsd
 
 TESTED_FOLDER = ../${TESTED_FOLDER_NAME}
 
-all: fclean createdir execute
+all: createdir execute fclean
 	
 createdir:
 	mkdir includes libs
