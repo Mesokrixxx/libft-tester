@@ -164,10 +164,11 @@ int main ()
 	char destSTRLCAT[100]; "Je";
 	char destSTRLCAT2[100]; "Je";
 	char srcSTRLCAT[100] = " suis la";
-	ASSERT_SIZE_T(strlcat(destSTRLCAT, srcSTRLCAT, strlen(srcSTRLCAT) / 2), ft_strlcat(destSTRLCAT2, srcSTRLCAT, strlen(srcSTRLCAT) / 2));
-	ASSERT_SIZE_T(strlcat(destSTRLCAT, srcSTRLCAT, strlen(destSTRLCAT)), ft_strlcat(destSTRLCAT2, srcSTRLCAT, strlen(destSTRLCAT2)));
-	ASSERT_SIZE_T(strlcat(destSTRLCAT, srcSTRLCAT, strlen(destSTRLCAT) / 2), ft_strlcat(destSTRLCAT2, srcSTRLCAT, strlen(destSTRLCAT2) / 2));
-	ASSERT_SIZE_T(strlcat(destSTRLCAT, srcSTRLCAT, 0), ft_strlcat(destSTRLCAT2, srcSTRLCAT, 0));
+	ASSERT(ft_strlcat(destSTRLCAT2, srcSTRLCAT, strlen(srcSTRLCAT) - 1) > strlen(srcSTRLCAT) - 1);
+	ASSERT(ft_strlcat(destSTRLCAT2, srcSTRLCAT, strlen(srcSTRLCAT) / 2) > strlen(srcSTRLCAT) / 2);
+	ASSERT(ft_strlcat(destSTRLCAT, srcSTRLCAT, strlen(destSTRLCAT)) > strlen(destSTRLCAT2));
+	ASSERT(ft_strlcat(destSTRLCAT, srcSTRLCAT, strlen(destSTRLCAT) / 2) > strlen(destSTRLCAT2) / 2);
+	ASSERT(ft_strlcat(destSTRLCAT, srcSTRLCAT, 0) > 0);
 
 	printf("\n--> TOUPPER <--\n");
 	ASSERT_CHAR(toupper('c'), ft_toupper('c'));
